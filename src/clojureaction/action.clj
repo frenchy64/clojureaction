@@ -1,3 +1,4 @@
+#!/usr/bin/env bb
 (ns clojureaction.action
   (:require [clj-yaml.core :as yaml]))
 
@@ -17,3 +18,6 @@
   (spit "action.yml" (yaml/generate-string template {:dumper-options {:flow-style :block}})))
 
 (defn -main [] (gen))
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply -main *command-line-args*))
