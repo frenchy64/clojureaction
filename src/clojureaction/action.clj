@@ -14,6 +14,6 @@
                   :with {:bb "1.12.195"}}}})
 
 (defn gen []
-  (spit "action.yml" (yaml/generate-string template)))
+  (spit "action.yml" (yaml/generate-string template {:dumper-options {:flow-style :block}})))
 
 (defn -main [] (gen))
