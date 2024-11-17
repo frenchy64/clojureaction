@@ -1,6 +1,6 @@
 {:deps {}
  :aliases {:test {:extra-paths ["test"]
                   :extra-deps {io.github.cognitect-labs/test-runner 
-                               {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+                               {:git/sha "9d36f36ff541dac680a05010e4348c744333f191"}}
                   :main-opts ["-m" "cognitect.test-runner"]
                   :exec-fn cognitect.test-runner.api/test}}}
