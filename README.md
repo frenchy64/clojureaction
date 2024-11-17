@@ -1,3 +1,3 @@
 # clojureaction
 
-Reuable GitHub Actions for Clojure
+Reusable GitHub Actions builds for Clojure
