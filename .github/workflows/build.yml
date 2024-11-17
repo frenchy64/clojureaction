@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  pull_request:
+    - unstable
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        id: test-deps-cache
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.deps.clj
+          key: ${{ runner.os }}-test-deps-${{ hashFiles('deps.clj', 'bb.edn') }}
+          restore-keys: ${{ runner.os }}-test-deps-
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - uses: DeLaGuardo/setup-clojure@13.0
+        with:
+          cli: '1.12.195'
+      - run: ./script/test
