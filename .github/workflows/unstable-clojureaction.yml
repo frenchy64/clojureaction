@@ -58,15 +58,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: frenchy64/clojureaction
-        ref: 5fe313b63ac539c24dcbdf918169c4f425336f22
-        path: clojureaction-5fe313b63ac539c24dcbdf918169c4f425336f22
+        ref: b94f46e602d4ee09d56d8da18c1b3231a2adf415
+        path: clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415
     - name: Move clojureaction repository out of GITHUB_WORKSPACE
-      run: mv clojureaction-5fe313b63ac539c24dcbdf918169c4f425336f22 ../clojureaction-5fe313b63ac539c24dcbdf918169c4f425336f22
+      run: mv clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415 ../clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415
     - name: Checkout user repository
       uses: actions/checkout@v4
     - name: Parse clojureaction configuration
       id: config
-      run: ../clojureaction-5fe313b63ac539c24dcbdf918169c4f425336f22/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
+      run: ../clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Debug
       run: |-
         echo '${{steps.config.outputs.out}}'
@@ -88,7 +88,7 @@ jobs:
         key: ${{ fromJSON(steps.config.outputs.out).download-deps.key }}
         restore-keys: ${{ fromJSON(steps.config.outputs.out).download-deps.restore-keys }}
     - name: Download Clojure dependencies
-      working-directory: ../clojureaction-5fe313b63ac539c24dcbdf918169c4f425336f22
+      working-directory: ../clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache
