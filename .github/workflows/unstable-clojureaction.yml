@@ -58,15 +58,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: frenchy64/clojureaction
-        ref: ec4ad2af4caa86bd5f94ba14054f2f5b80748ef4
-        path: clojureaction-ec4ad2af4caa86bd5f94ba14054f2f5b80748ef4
+        ref: 4e24ac43a6ce2dc9d88e6708bc7e66b30b460d43
+        path: clojureaction-4e24ac43a6ce2dc9d88e6708bc7e66b30b460d43
     - name: Move clojureaction repository out of GITHUB_WORKSPACE
-      run: mv clojureaction-ec4ad2af4caa86bd5f94ba14054f2f5b80748ef4 ../clojureaction-ec4ad2af4caa86bd5f94ba14054f2f5b80748ef4
+      run: mv clojureaction-4e24ac43a6ce2dc9d88e6708bc7e66b30b460d43 ../clojureaction-4e24ac43a6ce2dc9d88e6708bc7e66b30b460d43
     - name: Checkout user repository
       uses: actions/checkout@v4
     - name: Parse clojureaction configuration
       id: config
-      run: ../clojureaction-ec4ad2af4caa86bd5f94ba14054f2f5b80748ef4/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
+      run: ../clojureaction-4e24ac43a6ce2dc9d88e6708bc7e66b30b460d43/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Debug
       run: echo '${{steps.config.outputs.out}}'
     - name: Inspect shared Clojure cache
@@ -74,7 +74,7 @@ jobs:
       if: fromJSON(steps.config.outputs.out).download-deps
       uses: actions/cache/restore@v4
       with:
-        path: ${{ fromJSON(steps.config.outputs.out).download-deps.path }}
+        path: ${{ fromJSON(steps.config.outputs.out).download-deps.cache-path }}
         key: ${{ fromJSON(steps.config.outputs.out).download-deps.key }}
         lookup-only: true
     - name: Download partial shared Clojure cache
@@ -82,18 +82,18 @@ jobs:
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-check.outputs.cache-hit != 'true'
       uses: actions/cache/restore@v4
       with:
-        path: ${{ fromJSON(steps.config.outputs.out).download-deps.path }}
+        path: ${{ fromJSON(steps.config.outputs.out).download-deps.cache-path }}
         key: ${{ fromJSON(steps.config.outputs.out).download-deps.key }}
         restore-keys: ${{ fromJSON(steps.config.outputs.out).download-deps.restore-keys }}
     - name: Download Clojure dependencies
-      working-directory: ../clojureaction-ec4ad2af4caa86bd5f94ba14054f2f5b80748ef4
+      working-directory: ../clojureaction-4e24ac43a6ce2dc9d88e6708bc7e66b30b460d43
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
       with:
-        path: ${{ fromJSON(steps.config.outputs.out).download-deps.path }}
+        path: ${{ fromJSON(steps.config.outputs.out).download-deps.cache-path }}
         key: ${{ fromJSON(steps.config.outputs.out).download-deps.key }}
   exec:
     needs: setup

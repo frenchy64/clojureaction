@@ -8,7 +8,7 @@
 
 (def output-name "out")
 
-(def cache-paths
+(def default-tool-cache-paths
   {:bb ["~/.m2/repository" "~/.deps.clj" "~/.gitlibs"]
    :cli ["~/.m2/repository" "~/.gitlibs"]
    :lein ["~/.m2/repository"]})
@@ -16,16 +16,19 @@
 (defn expand [conf]
   (cond-> conf
     (:download-deps conf)
-    (update :download-deps (fn [{:keys [command cache-tools cache-paths] :as m}]
-                             (assert ())
-                             (let [cache-paths (into (set cache-paths)
-                                                     (mapcat #(cache-paths (keyword %)))
-                                                     cache-tools)
+    (update :download-deps (fn [{:keys [command cache-tool cache-path] :as m}]
+                             (prn "cache-tool" cache-tool)
+                             (let [cache-path (into (if (string? cache-path)
+                                                      #{cache-path}
+                                                      (set cache-path))
+                                                    (mapcat #(default-tool-cache-paths (keyword %)))
+                                                    (cond-> cache-tool
+                                                      ((some-fn string? ident?) cache-tool) vector))
                                    files (into [] (mapcat #(fs/glob "." (fs/expand-home %) {:follow-links true}))
-                                               cache-paths)]
+                                               cache-path)]
                                (assoc m
-                                      :cache-paths (sort cache-paths)
-                                      :key (str "clojure-deps-" (digest/sha-256 (apply str (map digest/sha-256 cache-paths))))
+                                      :cache-path (sort cache-path)
+                                      :key (str "clojure-deps-" (digest/sha-256 (apply str (map digest/sha-256 cache-path))))
                                       ))))))
 
 (defn gen [code]
@@ -46,11 +49,13 @@
                     :name (format "Test (Clojure %s, Java %s)" clojure java)
                     :command (format "lein with-profile +%s test" clojure)}))
            :download-deps {:command "lein with-profile +test,+clj-kondo deps"
-                           :cache-tools [:bb :cli :lein]}
+                           :cache-tool [:bb :cli :lein]}
            :target-duration [5 :minutes]
            :java 21}))
   (gen (pr-str {:download-deps {:command "./script/deps"
-                                :cache-paths ["deps.edn"]}}))
+                                :cache-path ["deps.edn"]}}))
+  (gen (pr-str {:download-deps {:command "./script/deps"
+                                :cache-tool :cli}}))
   )
 
 (comment

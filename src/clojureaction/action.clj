@@ -83,7 +83,7 @@
                  cache-check-miss (->cache-miss cache-check)
                  cache-restore "cache-restore"
                  cache-restore-miss (->cache-miss cache-restore)
-                 cache-path (format "${{ %s.path }}" download-deps)
+                 cache-path (format "${{ %s.cache-path }}" download-deps)
                  cache-key (format "${{ %s.key }}" download-deps)
                  conf-output (format "steps.config.outputs.%s" input-config)]
              {:timeout-minutes 10

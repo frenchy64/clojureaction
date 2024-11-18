@@ -15,7 +15,7 @@ jobs:
     with:
       edn: |-
         {:download-deps {:command "script/deps"
-                         :cache-paths ["~/.m2"]}}
+                         :cache-tool :cli}}
   test:
     runs-on: ubuntu-22.04
     steps:
