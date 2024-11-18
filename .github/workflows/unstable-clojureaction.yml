@@ -4,6 +4,7 @@ description: GitHub Action to build Clojure projects
   workflow_call:
     inputs:
       edn:
+        type: string
         description: |-
           An edn map with the following keys:
 
@@ -57,12 +58,12 @@ jobs:
       with:
         repository: frenchy64/clojureaction
         ref: |
-          744a48d56d743621879c62a8bc42b7dca4d002a0
+          95702f09f588d840890cf4b98f3b8120e0b3b7c6
         path: |
-          ../clojureaction-744a48d56d743621879c62a8bc42b7dca4d002a0
+          ../clojureaction-95702f09f588d840890cf4b98f3b8120e0b3b7c6
     - name: Parse clojureaction configuration
       working-directory: |
-        ../clojureaction-744a48d56d743621879c62a8bc42b7dca4d002a0
+        ../clojureaction-95702f09f588d840890cf4b98f3b8120e0b3b7c6
       id: config
       run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Inspect shared Clojure cache
@@ -86,7 +87,7 @@ jobs:
         restore-keys: ${{ fromJSON(steps.config.outputs.edn).download-deps.restore-keys }}
     - name: Download Clojure dependencies
       working-directory: |
-        ../clojureaction-744a48d56d743621879c62a8bc42b7dca4d002a0
+        ../clojureaction-95702f09f588d840890cf4b98f3b8120e0b3b7c6
       if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache

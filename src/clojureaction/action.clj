@@ -23,7 +23,8 @@
 (def input-config "edn")
 
 (def inputs
-  {input-config {:description (str/join "\n" ["An edn map with the following keys:"
+  {input-config {:type "string"
+                 :description (str/join "\n" ["An edn map with the following keys:"
                                            ""
                                            "# YAML Example:"
                                            ""
