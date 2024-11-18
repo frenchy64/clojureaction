@@ -119,7 +119,6 @@
                        :if (str download-deps " && " cache-restore-miss)
                        :run (format "./src/clojureaction/download_deps.clj '${{ %s }}'" conf-output)}
                       {:name "Save Clojure cache"
-                       :id cache-check
                        :if (str download-deps " && " cache-restore-miss)
                        :uses "actions/cache/save@v4"
                        :with {:path cache-path
