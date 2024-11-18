@@ -74,7 +74,8 @@
    :on {:workflow_call {}}
    :inputs inputs
    ;:outputs {}
-   :jobs [{:setup
+   :jobs (array-map
+           :setup
            (let [download-deps (format "fromJSON(steps.config.outputs.%s).download-deps" input-config)
                  cache-check "cache-check"
                  ->cache-miss (fn [step] (format "steps.%s.outputs.cache-hit != 'true'" step))
@@ -123,17 +124,17 @@
                        :if (str download-deps " && " cache-restore-miss)
                        :uses "actions/cache/save@v4"
                        :with {:path cache-path
-                              :key cache-key}}]})}
-          {:exec
+                              :key cache-key}}]})
+           :exec
            {:needs :setup
             :timeout-minutes "${{ matrix.timeout || 15 }}"
             :strategy
             {:matrix
              {:include
               "${{ fromJSON(needs.setup.outputs.conf).matrix }}"
-              }}}}
-          {:teardown
-           {:needs [:setup :exec]}}]})
+              }}}
+           :teardown
+           {:needs [:setup :exec]})})
 
 (defn gen []
   (spit ".github/workflows/unstable-clojureaction.yml"

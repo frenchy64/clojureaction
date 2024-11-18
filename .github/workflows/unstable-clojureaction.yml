@@ -43,7 +43,7 @@ inputs:
                                       downloaded on a cache-hit.
         Default: true
 jobs:
-- setup:
+  setup:
     timeout-minutes: 10
     outputs:
       conf: ${{ steps.config.outputs.edn }}
@@ -58,16 +58,14 @@ jobs:
       with:
         repository: frenchy64/clojureaction
         ref: |
-          f13c608fff29995fa5f794271f5c9cf177621c22
+          76aa14fef61f50b81a031acf080547f68f13417f
         path: |
-          ../clojureaction-f13c608fff29995fa5f794271f5c9cf177621c22
+          ../clojureaction-76aa14fef61f50b81a031acf080547f68f13417f
     - name: Parse clojureaction configuration
       working-directory: |
-        ../clojureaction-f13c608fff29995fa5f794271f5c9cf177621c22
+        ../clojureaction-76aa14fef61f50b81a031acf080547f68f13417f
       id: config
       run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
-    - name: Checkout user repository
-      uses: actions/checkout@v4
     - name: Inspect shared Clojure cache
       id: cache-check
       if: fromJSON(steps.config.outputs.edn).download-deps
@@ -76,6 +74,9 @@ jobs:
         path: ${{ fromJSON(steps.config.outputs.edn).download-deps.path }}
         key: ${{ fromJSON(steps.config.outputs.edn).download-deps.key }}
         lookup-only: true
+    - name: Checkout user repository
+      if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-check.outputs.cache-hit != 'true'
+      uses: actions/checkout@v4
     - name: Download partial shared Clojure cache
       id: cache-restore
       if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-check.outputs.cache-hit != 'true'
@@ -86,16 +87,23 @@ jobs:
         restore-keys: ${{ fromJSON(steps.config.outputs.edn).download-deps.restore-keys }}
     - name: Download Clojure dependencies
       working-directory: |
-        ../clojureaction-f13c608fff29995fa5f794271f5c9cf177621c22
+        ../clojureaction-76aa14fef61f50b81a031acf080547f68f13417f
       if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
-- exec:
+    - name: Save Clojure cache
+      id: cache-check
+      if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ fromJSON(steps.config.outputs.edn).download-deps.path }}
+        key: ${{ fromJSON(steps.config.outputs.edn).download-deps.key }}
+  exec:
     needs: setup
     timeout-minutes: ${{ matrix.timeout || 15 }}
     strategy:
       matrix:
         include: ${{ fromJSON(needs.setup.outputs.conf).matrix }}
-- teardown:
+  teardown:
     needs:
     - setup
     - exec
