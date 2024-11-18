@@ -95,7 +95,7 @@
                        :with {:repository this-repo
                               :ref this-sha
                               :path this-repo-dir}}
-                      {:run (format "mv '%s' '%s'" this-repo-dir this-repo-path)}
+                      {:run (format "mv %s %s" this-repo-dir this-repo-path)}
                       {:name "Parse clojureaction configuration"
                        :working-directory this-repo-dir
                        :id "config"
