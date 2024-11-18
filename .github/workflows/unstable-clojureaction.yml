@@ -58,12 +58,12 @@ jobs:
       with:
         repository: frenchy64/clojureaction
         ref: |
-          95702f09f588d840890cf4b98f3b8120e0b3b7c6
+          fc36715eba3d447fb563509b063d2dd0101009ea
         path: |
-          ../clojureaction-95702f09f588d840890cf4b98f3b8120e0b3b7c6
+          ../clojureaction-fc36715eba3d447fb563509b063d2dd0101009ea
     - name: Parse clojureaction configuration
       working-directory: |
-        ../clojureaction-95702f09f588d840890cf4b98f3b8120e0b3b7c6
+        ../clojureaction-fc36715eba3d447fb563509b063d2dd0101009ea
       id: config
       run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Inspect shared Clojure cache
@@ -87,11 +87,10 @@ jobs:
         restore-keys: ${{ fromJSON(steps.config.outputs.edn).download-deps.restore-keys }}
     - name: Download Clojure dependencies
       working-directory: |
-        ../clojureaction-95702f09f588d840890cf4b98f3b8120e0b3b7c6
+        ../clojureaction-fc36715eba3d447fb563509b063d2dd0101009ea
       if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache
-      id: cache-check
       if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
       with:
