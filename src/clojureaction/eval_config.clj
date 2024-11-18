@@ -17,8 +17,9 @@
   (cond-> conf
     (:download-deps conf)
     (update :download-deps (fn [{:keys [command tool cache-path] :as m}]
-                             (let [tool (cond-> tool
-                                          ((some-fn string? ident?) tool) vector)
+                             (let [tool (-> tool
+                                            (cond-> ((some-fn string? ident?) tool) vector)
+                                            (->> (mapv keyword)))
                                    cache-path (into (if (string? cache-path)
                                                       #{cache-path}
                                                       (set cache-path))
