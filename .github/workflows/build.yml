@@ -11,7 +11,9 @@ on:
 
 jobs:
   call-workflow-1-in-local-repo:
-    uses: ./.github/workflows/reusable.yml
+    uses: ./.github/workflows/unstable-clojureaction.yml
+    with: >
+      {}
   test:
     runs-on: ubuntu-22.04
     steps:
