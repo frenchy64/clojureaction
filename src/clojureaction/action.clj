@@ -5,6 +5,9 @@
             [clojure.string :as str]))
 
 (def this-repo "frenchy64/clojureaction")
+(def setup-clojure "DeLaGuardo/setup-clojure@13.0")
+(def actions-checkout "actions/checkout@v4")
+(def bb-version "1.12.195")
 
 (defn indent [n s]
   (->> s
@@ -22,9 +25,14 @@
                                        "      edn: |-"
                                        (indent 8 (with-out-str
                                                    (pp/pprint
-                                                     {:commands ["lein test"
-                                                                 "clj-kondo"]
-                                                      :deps "lein with-profile +test,+clj-kondo deps"
+                                                     {:commands
+                                                      '(cons "clj-kondo"
+                                                             (for [java [11 21]
+                                                                   clojure ["1.11" "1.12"]]
+                                                               {:setup-java {:java-version java}
+                                                                :name (format "Test (Clojure %s, Java %s)" clojure java)
+                                                                :command (format "lein with-profile +%s test" clojure)}))
+                                                      :download-deps "lein with-profile +test,+clj-kondo deps"
                                                       :target-duration [5 :minutes]
                                                       :java 21})))
                                        ""
@@ -32,7 +40,7 @@
                                        "- :test  A command to run Clojure tests"
                                        "  Example: \"lein test\""
                                        "  Default: none"
-                                       "- :deps  A command to download all Clojure dependencies."
+                                       "- :download-deps  A command to download all Clojure dependencies."
                                        "  Example: \"lein deps\""
                                        "  Default: none"
                                        "- :lint  A command to lint Clojure sources."
@@ -54,8 +62,12 @@
               :icon "type"}
    :inputs inputs
    :runs {:using "composite"
-          :steps [{:uses "DeLaGuardo/setup-clojure@13.0"
-                   :with {:bb "1.12.195"}}]}})
+          :steps [{:uses setup-clojure
+                   :with {:bb bb-version}}
+                  {:uses actions-checkout
+                   :with {:repository this-repo
+                          ;; hmm how to get current sha
+                          :ref "release"}}]}})
 
 (defn gen []
   (spit "action.yml" (yaml/generate-string template {:dumper-options {:flow-style :block}})))
