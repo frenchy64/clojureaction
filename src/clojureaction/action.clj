@@ -130,13 +130,13 @@
             :timeout-minutes "${{ matrix.timeout || 15 }}"
             :runs-on "${{ matrix.runs-on || 'ubuntu-latest' }}"
             :strategy
-            {:matrix
-             {:include
-              "${{ fromJSON(needs.setup.outputs.conf).matrix }}"
-              }}
+            {:matrix {:include "${{ fromJSON(needs.setup.outputs.conf).matrix }}"}}
             :steps ["ls"]}
            :teardown
-           {:needs [:setup :exec]})})
+           {:needs [:setup :exec]
+            :runs-on "ubuntu-latest"
+            :steps {:run "ls"}
+            })})
 
 (defn gen []
   (spit ".github/workflows/unstable-clojureaction.yml"
