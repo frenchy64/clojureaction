@@ -85,6 +85,7 @@
                  cache-restore-miss (->cache-miss cache-restore)
                  cache-path (format "${{ %s.cache-path }}" download-deps)
                  cache-key (format "${{ %s.key }}" download-deps)
+                 deps-command (format "${{ %s.command }}" download-deps)
                  setup-clojure-with (format "${{ %s.setup-clojure }}" download-deps)
                  conf-output (format "steps.config.outputs.%s" input-config)]
              {:timeout-minutes 10
@@ -128,7 +129,7 @@
                       {:name "Download Clojure dependencies"
                        :working-directory this-repo-path
                        :if (str download-deps " && " cache-restore-miss)
-                       :run (format "%s/src/clojureaction/download_deps.clj '${{ %s }}'" this-repo-path conf-output)}
+                       :run (format "%s/src/clojureaction/download_deps.clj '${{ %s }}'" this-repo-path deps-command)}
                       {:name "Save Clojure cache"
                        :if (str download-deps " && " cache-restore-miss)
                        :uses "actions/cache/save@v4"
