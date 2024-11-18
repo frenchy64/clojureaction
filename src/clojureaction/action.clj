@@ -122,13 +122,13 @@
                        :with {:path cache-path
                               :key cache-key
                               :restore-keys (format "${{ %s.restore-keys }}" download-deps)}}
+                      {:name "Install Clojure tools"
+                       :uses setup-clojure
+                       :with setup-clojure-with}
                       {:name "Download Clojure dependencies"
                        :working-directory this-repo-path
                        :if (str download-deps " && " cache-restore-miss)
                        :run (format "%s/src/clojureaction/download_deps.clj '${{ %s }}'" this-repo-path conf-output)}
-                      {:name "Install Clojure tools"
-                       :uses setup-clojure
-                       :with setup-clojure-with}
                       {:name "Save Clojure cache"
                        :if (str download-deps " && " cache-restore-miss)
                        :uses "actions/cache/save@v4"

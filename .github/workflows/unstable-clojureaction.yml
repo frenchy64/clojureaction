@@ -58,15 +58,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: frenchy64/clojureaction
-        ref: 3a433acd4afabd13cdba2f0c6833dbddd720a78c
-        path: clojureaction-3a433acd4afabd13cdba2f0c6833dbddd720a78c
+        ref: b9b9dbd0e47b89c47bdfce887c2fd2700440507f
+        path: clojureaction-b9b9dbd0e47b89c47bdfce887c2fd2700440507f
     - name: Move clojureaction repository out of GITHUB_WORKSPACE
-      run: mv clojureaction-3a433acd4afabd13cdba2f0c6833dbddd720a78c ../clojureaction-3a433acd4afabd13cdba2f0c6833dbddd720a78c
+      run: mv clojureaction-b9b9dbd0e47b89c47bdfce887c2fd2700440507f ../clojureaction-b9b9dbd0e47b89c47bdfce887c2fd2700440507f
     - name: Checkout user repository
       uses: actions/checkout@v4
     - name: Parse clojureaction configuration
       id: config
-      run: ../clojureaction-3a433acd4afabd13cdba2f0c6833dbddd720a78c/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
+      run: ../clojureaction-b9b9dbd0e47b89c47bdfce887c2fd2700440507f/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Debug
       run: |-
         echo '${{steps.config.outputs.out}}'
@@ -87,13 +87,13 @@ jobs:
         path: ${{ fromJSON(steps.config.outputs.out).download-deps.cache-path }}
         key: ${{ fromJSON(steps.config.outputs.out).download-deps.key }}
         restore-keys: ${{ fromJSON(steps.config.outputs.out).download-deps.restore-keys }}
-    - name: Download Clojure dependencies
-      working-directory: ../clojureaction-3a433acd4afabd13cdba2f0c6833dbddd720a78c
-      if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
-      run: ../clojureaction-3a433acd4afabd13cdba2f0c6833dbddd720a78c/src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Install Clojure tools
       uses: DeLaGuardo/setup-clojure@13.0
       with: ${{ fromJSON(steps.config.outputs.out).download-deps.setup-clojure }}
+    - name: Download Clojure dependencies
+      working-directory: ../clojureaction-b9b9dbd0e47b89c47bdfce887c2fd2700440507f
+      if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
+      run: ../clojureaction-b9b9dbd0e47b89c47bdfce887c2fd2700440507f/src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
