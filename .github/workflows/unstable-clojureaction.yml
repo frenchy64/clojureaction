@@ -57,12 +57,12 @@ jobs:
       with:
         repository: frenchy64/clojureaction
         ref: |
-          bef1042bd71f02c03dd81ba6f68f7043aa0415af
+          744a48d56d743621879c62a8bc42b7dca4d002a0
         path: |
-          ../clojureaction-bef1042bd71f02c03dd81ba6f68f7043aa0415af
+          ../clojureaction-744a48d56d743621879c62a8bc42b7dca4d002a0
     - name: Parse clojureaction configuration
       working-directory: |
-        ../clojureaction-bef1042bd71f02c03dd81ba6f68f7043aa0415af
+        ../clojureaction-744a48d56d743621879c62a8bc42b7dca4d002a0
       id: config
       run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Inspect shared Clojure cache
@@ -86,7 +86,7 @@ jobs:
         restore-keys: ${{ fromJSON(steps.config.outputs.edn).download-deps.restore-keys }}
     - name: Download Clojure dependencies
       working-directory: |
-        ../clojureaction-bef1042bd71f02c03dd81ba6f68f7043aa0415af
+        ../clojureaction-744a48d56d743621879c62a8bc42b7dca4d002a0
       if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache
@@ -104,7 +104,7 @@ jobs:
       matrix:
         include: ${{ fromJSON(needs.setup.outputs.conf).matrix }}
     steps:
-    - ls
+    - run: ls
   teardown:
     needs:
     - setup

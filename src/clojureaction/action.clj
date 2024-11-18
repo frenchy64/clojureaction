@@ -129,12 +129,11 @@
             :runs-on "${{ matrix.runs-on || 'ubuntu-latest' }}"
             :strategy
             {:matrix {:include "${{ fromJSON(needs.setup.outputs.conf).matrix }}"}}
-            :steps ["ls"]}
+            :steps [{:run "ls"}]}
            :teardown
            {:needs [:setup :exec]
             :runs-on "ubuntu-latest"
-            :steps [{:run "ls"}]
-            })})
+            :steps [{:run "ls"}]})})
 
 (defn gen []
   (spit ".github/workflows/unstable-clojureaction.yml"
