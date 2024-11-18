@@ -98,8 +98,8 @@
                               :path this-repo-dir}}
                       {:name "Move clojureaction repository out of GITHUB_WORKSPACE"
                        :run (format "mv %s %s" this-repo-dir this-repo-path)}
+                      ;; needed to calculate cache key
                       {:name "Checkout user repository"
-                       :if (str download-deps " && " cache-check-miss)
                        :uses actions-checkout}
                       {:name "Parse clojureaction configuration"
                        :id "config"
