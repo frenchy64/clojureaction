@@ -70,9 +70,7 @@
 (def template
   {:name "clojureaction"
    :description "GitHub Action to build Clojure projects"
-   :author "Ambrose Bonnaire-Sergeant"
-   :on {:workflow_call {}}
-   :inputs inputs
+   :on {:workflow_call {:inputs inputs}}
    ;:outputs {}
    :jobs (array-map
            :setup
