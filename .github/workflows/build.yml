@@ -14,7 +14,8 @@ jobs:
     uses: ./.github/workflows/unstable-clojureaction.yml
     with:
       edn: |-
-        {:download-deps "script/deps"}
+        {:download-deps {:command "script/deps"
+                         :cache-paths ["~/.m2"]}}
   test:
     runs-on: ubuntu-22.04
     steps:

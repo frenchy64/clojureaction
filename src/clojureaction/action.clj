@@ -98,10 +98,12 @@
                               :path this-repo-dir}}
                       {:name "Move clojureaction repository out of GITHUB_WORKSPACE"
                        :run (format "mv %s %s" this-repo-dir this-repo-path)}
+                      {:name "Checkout user repository"
+                       :if (str download-deps " && " cache-check-miss)
+                       :uses actions-checkout}
                       {:name "Parse clojureaction configuration"
-                       :working-directory this-repo-path
                        :id "config"
-                       :run (format "./src/clojureaction/eval_config.clj '${{ inputs.%s }}'" input-config)}
+                       :run (format "%s/src/clojureaction/eval_config.clj '${{ inputs.%s }}'" this-repo-path input-config)}
                       {:name "Debug"
                        :run (format "echo '${{%s}}'" raw-config)}
                       {:name "Inspect shared Clojure cache"
@@ -111,9 +113,6 @@
                        :with {:path cache-path
                               :key cache-key
                               :lookup-only true}}
-                      {:name "Checkout user repository"
-                       :if (str download-deps " && " cache-check-miss)
-                       :uses actions-checkout}
                       {:name "Download partial shared Clojure cache"
                        :id cache-restore
                        :if (str download-deps " && " cache-check-miss)
