@@ -76,7 +76,7 @@
    ;:outputs {}
    :jobs (array-map
            :setup
-           (let [download-deps (format "fromJSON(steps.config.outputs.%s).download-deps" input-config)
+           (let [download-deps (format "fromJSON(steps.config.outputs.%s).download-deps" econf/output-name)
                  cache-check "cache-check"
                  ->cache-miss (fn [step] (format "steps.%s.outputs.cache-hit != 'true'" step))
                  cache-check-miss (->cache-miss cache-check)

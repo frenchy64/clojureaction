@@ -7,7 +7,7 @@
 (defn gen [code]
   (let [id (str (random-uuid))
         conf (-> code read-string eval pp/pprint with-out-str)]
-    (println "Setting 'out' to:")
+    (println (format "Setting '%s' to:" output-name))
     (print conf)
     (flush)
     (str output-name "<<" id "\n"
