@@ -15,7 +15,7 @@ jobs:
     with:
       edn: |-
         {:download-deps {:command "script/deps"
-                         :cache-tool :cli}}
+                         :tool :cli}}
   test:
     runs-on: ubuntu-22.04
     steps:

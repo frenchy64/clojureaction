@@ -16,19 +16,20 @@
 (defn expand [conf]
   (cond-> conf
     (:download-deps conf)
-    (update :download-deps (fn [{:keys [command cache-tool cache-path] :as m}]
-                             (prn "cache-tool" cache-tool)
-                             (let [cache-path (into (if (string? cache-path)
+    (update :download-deps (fn [{:keys [command tool cache-path] :as m}]
+                             (let [tool (cond-> tool
+                                          ((some-fn string? ident?) tool) vector)
+                                   cache-path (into (if (string? cache-path)
                                                       #{cache-path}
                                                       (set cache-path))
                                                     (mapcat #(default-tool-cache-paths (keyword %)))
-                                                    (cond-> cache-tool
-                                                      ((some-fn string? ident?) cache-tool) vector))
+                                                    tool)
                                    files (into [] (mapcat #(fs/glob "." (fs/expand-home %) {:follow-links true}))
                                                cache-path)]
                                (assoc m
                                       :cache-path (str/join "\n" (sort cache-path))
                                       :key (str "clojure-deps-" (digest/sha-256 (apply str (map digest/sha-256 cache-path))))
+                                      :setup-clojure (zipmap tool (repeat "latest"))
                                       ))))))
 
 (defn gen [code]
@@ -49,13 +50,13 @@
                     :name (format "Test (Clojure %s, Java %s)" clojure java)
                     :command (format "lein with-profile +%s test" clojure)}))
            :download-deps {:command "lein with-profile +test,+clj-kondo deps"
-                           :cache-tool [:bb :cli :lein]}
+                           :tool [:bb :cli :lein]}
            :target-duration [5 :minutes]
            :java 21}))
   (gen (pr-str {:download-deps {:command "./script/deps"
                                 :cache-path ["deps.edn"]}}))
   (gen (pr-str {:download-deps {:command "./script/deps"
-                                :cache-tool :cli}}))
+                                :tool :cli}}))
   )
 
 (comment
