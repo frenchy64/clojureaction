@@ -75,20 +75,56 @@
    :inputs inputs
    ;:outputs {}
    :jobs [{:setup
-           {:timeout-minutes 10
-            :outputs {:conf (format "${{ steps.config.outputs.%s }}" input-config)}
-            :runs-on "ubuntu-latest"
-            :steps [install-bb
-                    {:name "Checkout clojureaction repository"
-                     :uses actions-checkout
-                     :with {:repository this-repo
-                            :ref this-sha
-                            :path this-repo-dir}}
-                    {:name "Parse clojureaction configuration"
-                     :working-directory this-repo-dir
-                     :id "config"
-                     :run (format "./src/clojureaction/eval_config.clj '${{ inputs.%s }}'" input-config)}]}}
-          {:run
+           (let [download-deps (format "fromJSON(steps.config.outputs.%s).download-deps" input-config)
+                 cache-check "cache-check"
+                 ->cache-miss (fn [step] (format "steps.%s.outputs.cache-hit != 'true'" step))
+                 cache-check-miss (->cache-miss cache-check)
+                 cache-restore "cache-restore"
+                 cache-restore-miss (->cache-miss cache-restore)
+                 cache-path (format "${{ %s.path }}" download-deps)
+                 cache-key (format "${{ %s.key }}" download-deps)
+                 conf-output (format "steps.config.outputs.%s" input-config)]
+             {:timeout-minutes 10
+              :outputs {:conf (format "${{ %s }}" conf-output)}
+              :runs-on "ubuntu-latest"
+              :steps [install-bb
+                      {:name "Checkout clojureaction repository"
+                       :uses actions-checkout
+                       :with {:repository this-repo
+                              :ref this-sha
+                              :path this-repo-dir}}
+                      {:name "Parse clojureaction configuration"
+                       :working-directory this-repo-dir
+                       :id "config"
+                       :run (format "./src/clojureaction/eval_config.clj '${{ inputs.%s }}'" input-config)}
+                      {:name "Inspect shared Clojure cache"
+                       :id cache-check
+                       :if download-deps
+                       :uses "actions/cache/restore@v4"
+                       :with {:path cache-path
+                              :key cache-key
+                              :lookup-only true}}
+                      {:name "Checkout user repository"
+                       :if (str download-deps " && " cache-check-miss)
+                       :uses actions-checkout}
+                      {:name "Download partial shared Clojure cache"
+                       :id cache-restore
+                       :if (str download-deps " && " cache-check-miss)
+                       :uses "actions/cache/restore@v4"
+                       :with {:path cache-path
+                              :key cache-key
+                              :restore-keys (format "${{ %s.restore-keys }}" download-deps)}}
+                      {:name "Download Clojure dependencies"
+                       :working-directory this-repo-dir
+                       :if (str download-deps " && " cache-restore-miss)
+                       :run (format "./src/clojureaction/download_deps.clj '${{ %s }}'" conf-output)}
+                      {:name "Save Clojure cache"
+                       :id cache-check
+                       :if (str download-deps " && " cache-restore-miss)
+                       :uses "actions/cache/save@v4"
+                       :with {:path cache-path
+                              :key cache-key}}]})}
+          {:exec
            {:needs :setup
             :timeout-minutes "${{ matrix.timeout || 15 }}"
             :strategy
@@ -97,10 +133,10 @@
               "${{ fromJSON(needs.setup.outputs.conf).matrix }}"
               }}}}
           {:teardown
-           {:needs [:setup :run]}}]})
+           {:needs [:setup :exec]}}]})
 
 (defn gen []
-  (spit ".github/workflows/clojureaction.yml"
+  (spit ".github/workflows/unstable-clojureaction.yml"
         (yaml/generate-string template {:dumper-options {:flow-style :block}})))
 
 (defn -main [] (gen))

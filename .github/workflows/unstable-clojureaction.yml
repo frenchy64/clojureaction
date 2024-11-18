@@ -1,0 +1,101 @@
+name: clojureaction
+description: GitHub Action to build Clojure projects
+author: Ambrose Bonnaire-Sergeant
+'on':
+  workflow_call: {}
+inputs:
+  edn:
+    description: |-
+      An edn map with the following keys:
+
+      # YAML Example:
+
+        - uses: frenchy64/clojureaction@release
+          with:
+            edn: |-
+              {:commands
+               (cons
+                "clj-kondo"
+                (for
+                 [java [11 21] clojure ["1.11" "1.12"]]
+                 {:setup-java {:java-version java},
+                  :name (format "Test (Clojure %s, Java %s)" clojure java),
+                  :command (format "lein with-profile +%s test" clojure)})),
+               :download-deps "lein with-profile +test,+clj-kondo deps",
+               :target-duration [5 :minutes],
+               :java 21}
+
+      # Supported keys:
+      - :test  A command to run Clojure tests
+        Example: "lein test"
+        Default: none
+      - :download-deps  A command to download all Clojure dependencies.
+        Example: "lein deps"
+        Default: none
+      - :lint  A command to lint Clojure sources.
+        Example: "clj-kondo"
+        Default: none
+      - :setup-clojure
+      - :java
+      - :target-duration  Target duration for entire build.
+        Example: [5 :minutes]
+      - :ineffective-cache-detection  If true, fail the build if dependencies are still
+                                      downloaded on a cache-hit.
+        Default: true
+jobs:
+- setup:
+    timeout-minutes: 10
+    outputs:
+      conf: ${{ steps.config.outputs.edn }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Babashka
+      uses: DeLaGuardo/setup-clojure@13.0
+      with:
+        bb: 1.12.195
+    - name: Checkout clojureaction repository
+      uses: actions/checkout@v4
+      with:
+        repository: frenchy64/clojureaction
+        ref: |
+          f13c608fff29995fa5f794271f5c9cf177621c22
+        path: |
+          ../clojureaction-f13c608fff29995fa5f794271f5c9cf177621c22
+    - name: Parse clojureaction configuration
+      working-directory: |
+        ../clojureaction-f13c608fff29995fa5f794271f5c9cf177621c22
+      id: config
+      run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
+    - name: Checkout user repository
+      uses: actions/checkout@v4
+    - name: Inspect shared Clojure cache
+      id: cache-check
+      if: fromJSON(steps.config.outputs.edn).download-deps
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ fromJSON(steps.config.outputs.edn).download-deps.path }}
+        key: ${{ fromJSON(steps.config.outputs.edn).download-deps.key }}
+        lookup-only: true
+    - name: Download partial shared Clojure cache
+      id: cache-restore
+      if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-check.outputs.cache-hit != 'true'
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ fromJSON(steps.config.outputs.edn).download-deps.path }}
+        key: ${{ fromJSON(steps.config.outputs.edn).download-deps.key }}
+        restore-keys: ${{ fromJSON(steps.config.outputs.edn).download-deps.restore-keys }}
+    - name: Download Clojure dependencies
+      working-directory: |
+        ../clojureaction-f13c608fff29995fa5f794271f5c9cf177621c22
+      if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
+      run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
+- exec:
+    needs: setup
+    timeout-minutes: ${{ matrix.timeout || 15 }}
+    strategy:
+      matrix:
+        include: ${{ fromJSON(needs.setup.outputs.conf).matrix }}
+- teardown:
+    needs:
+    - setup
+    - exec
