@@ -9,11 +9,9 @@
   (let [id (str (random-uuid))
         conf (-> code read-string eval (json/encode {:pretty true}))]
     (println (format "Setting '%s' to:" output-name))
-    (print conf)
-    (flush)
+    (println conf)
     (str output-name "<<" id "\n"
-         conf
-         "\n" id "\n")))
+         conf "\n" id "\n")))
 
 (comment
   (gen "{:commands
