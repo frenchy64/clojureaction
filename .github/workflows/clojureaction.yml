@@ -2,9 +2,9 @@ name: clojureaction
 description: GitHub Action to build Clojure projects
 author: Ambrose Bonnaire-Sergeant
 'on':
-  workflow_call: ''
+  workflow_call: {}
 inputs:
-- edn:
+  edn:
     description: |-
       An edn map with the following keys:
 
@@ -53,4 +53,11 @@ jobs:
       with:
         repository: frenchy64/clojureaction
         ref: |
-          70c87eeb31bbf606fa095b2b3b6e053a231bcc9e
+          c17d5c9b6e47587cff7ca07e39c84122635f1e8e
+        path: |
+          ../clojureaction-c17d5c9b6e47587cff7ca07e39c84122635f1e8e
+    - working-directory: |
+        ../clojureaction-c17d5c9b6e47587cff7ca07e39c84122635f1e8e
+      run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
+- run:
+    needs: setup
