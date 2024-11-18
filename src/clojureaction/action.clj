@@ -128,11 +128,13 @@
            :exec
            {:needs :setup
             :timeout-minutes "${{ matrix.timeout || 15 }}"
+            :runs-on "${{ matrix.runs-on || 'ubuntu-latest' }}"
             :strategy
             {:matrix
              {:include
               "${{ fromJSON(needs.setup.outputs.conf).matrix }}"
-              }}}
+              }}
+            :steps ["ls"]}
            :teardown
            {:needs [:setup :exec]})})
 

@@ -58,12 +58,12 @@ jobs:
       with:
         repository: frenchy64/clojureaction
         ref: |
-          76aa14fef61f50b81a031acf080547f68f13417f
+          683e34ffe27f9610bc2848395bbf754dcc2d4c49
         path: |
-          ../clojureaction-76aa14fef61f50b81a031acf080547f68f13417f
+          ../clojureaction-683e34ffe27f9610bc2848395bbf754dcc2d4c49
     - name: Parse clojureaction configuration
       working-directory: |
-        ../clojureaction-76aa14fef61f50b81a031acf080547f68f13417f
+        ../clojureaction-683e34ffe27f9610bc2848395bbf754dcc2d4c49
       id: config
       run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Inspect shared Clojure cache
@@ -87,7 +87,7 @@ jobs:
         restore-keys: ${{ fromJSON(steps.config.outputs.edn).download-deps.restore-keys }}
     - name: Download Clojure dependencies
       working-directory: |
-        ../clojureaction-76aa14fef61f50b81a031acf080547f68f13417f
+        ../clojureaction-683e34ffe27f9610bc2848395bbf754dcc2d4c49
       if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache
@@ -100,9 +100,12 @@ jobs:
   exec:
     needs: setup
     timeout-minutes: ${{ matrix.timeout || 15 }}
+    runs-on: ${{ matrix.runs-on || 'ubuntu-latest' }}
     strategy:
       matrix:
         include: ${{ fromJSON(needs.setup.outputs.conf).matrix }}
+    steps:
+    - ls
   teardown:
     needs:
     - setup
