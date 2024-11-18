@@ -97,7 +97,7 @@
                               :path this-repo-dir}}
                       {:run (format "mv %s %s" this-repo-dir this-repo-path)}
                       {:name "Parse clojureaction configuration"
-                       :working-directory this-repo-dir
+                       :working-directory this-repo-path
                        :id "config"
                        :run (format "./src/clojureaction/eval_config.clj '${{ inputs.%s }}'" input-config)}
                       {:name "Inspect shared Clojure cache"
