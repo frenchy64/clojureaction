@@ -75,7 +75,8 @@
    :inputs inputs
    ;:outputs {}
    :jobs [{:setup
-           {:outputs {:conf (format "${{ steps.config.outputs.%s }}" input-config)}
+           {:timeout-minutes 10
+            :outputs {:conf (format "${{ steps.config.outputs.%s }}" input-config)}
             :runs-on "ubuntu-latest"
             :steps [install-bb
                     {:name "Checkout clojureaction repository"
@@ -89,6 +90,7 @@
                      :run (format "./src/clojureaction/eval_config.clj '${{ inputs.%s }}'" input-config)}]}}
           {:run
            {:needs :setup
+            :timeout-minutes "${{ matrix.timeout || 15 }}"
             :strategy
             {:matrix
              {:include
