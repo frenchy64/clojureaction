@@ -1,4 +1,5 @@
-{:deps {clj-commons/clj-yaml {:mvn/version "1.0.28"}}
+{:deps {clj-commons/clj-yaml {:mvn/version "1.0.28"}
+        cheshire/cheshire {:mvn/version "5.13.0"}}
  :aliases {:test {:extra-paths ["test"]}
            :test-runner {:extra-deps {io.github.cognitect-labs/test-runner 
                                       {:git/sha "9d36f36ff541dac680a05010e4348c744333f191"}}

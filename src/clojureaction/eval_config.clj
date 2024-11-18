@@ -1,12 +1,13 @@
 #!/usr/bin/env bb
 (ns clojureaction.eval-config
-  (:require [clojure.pprint :as pp]))
+  (:require [clojure.pprint :as pp]
+            [cheshire.core :as json]))
 
 (def output-name "out")
 
 (defn gen [code]
   (let [id (str (random-uuid))
-        conf (-> code read-string eval pp/pprint with-out-str)]
+        conf (-> code read-string eval (json/encode {:pretty true}))]
     (println (format "Setting '%s' to:" output-name))
     (print conf)
     (flush)
