@@ -125,6 +125,7 @@
                               :restore-keys (format "${{ %s.restore-keys }}" download-deps)}}
                       {:name "Install Clojure tools"
                        :uses setup-clojure
+                       :if (str download-deps " && " cache-restore-miss)
                        :with setup-clojure-with}
                       {:name "Download Clojure dependencies"
                        :working-directory this-repo-path
