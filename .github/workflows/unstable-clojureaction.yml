@@ -58,12 +58,12 @@ jobs:
       with:
         repository: frenchy64/clojureaction
         ref: |
-          683e34ffe27f9610bc2848395bbf754dcc2d4c49
+          a1d5578afb28119023f4986ac8baa7d9b5d47f56
         path: |
-          ../clojureaction-683e34ffe27f9610bc2848395bbf754dcc2d4c49
+          ../clojureaction-a1d5578afb28119023f4986ac8baa7d9b5d47f56
     - name: Parse clojureaction configuration
       working-directory: |
-        ../clojureaction-683e34ffe27f9610bc2848395bbf754dcc2d4c49
+        ../clojureaction-a1d5578afb28119023f4986ac8baa7d9b5d47f56
       id: config
       run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Inspect shared Clojure cache
@@ -87,7 +87,7 @@ jobs:
         restore-keys: ${{ fromJSON(steps.config.outputs.edn).download-deps.restore-keys }}
     - name: Download Clojure dependencies
       working-directory: |
-        ../clojureaction-683e34ffe27f9610bc2848395bbf754dcc2d4c49
+        ../clojureaction-a1d5578afb28119023f4986ac8baa7d9b5d47f56
       if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache
@@ -110,3 +110,6 @@ jobs:
     needs:
     - setup
     - exec
+    runs-on: ubuntu-latest
+    steps:
+    - run: ls

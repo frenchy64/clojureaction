@@ -135,7 +135,7 @@
            :teardown
            {:needs [:setup :exec]
             :runs-on "ubuntu-latest"
-            :steps {:run "ls"}
+            :steps [{:run "ls"}]
             })})
 
 (defn gen []
