@@ -9,7 +9,7 @@
 (spit "current-sha" (:out (sh/sh "git" "rev-parse" "--verify" "HEAD")))
 
 (def this-repo "frenchy64/clojureaction")
-(def this-sha (slurp "current-sha"))
+(def this-sha (str/trim (slurp "current-sha")))
 (def setup-clojure "DeLaGuardo/setup-clojure@13.0")
 (def actions-checkout "actions/checkout@v4")
 (def bb-version "1.12.195")
