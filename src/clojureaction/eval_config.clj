@@ -27,7 +27,7 @@
                                    files (into [] (mapcat #(fs/glob "." (fs/expand-home %) {:follow-links true}))
                                                cache-path)]
                                (assoc m
-                                      :cache-path (sort cache-path)
+                                      :cache-path (str/join "\n" (sort cache-path))
                                       :key (str "clojure-deps-" (digest/sha-256 (apply str (map digest/sha-256 cache-path))))
                                       ))))))
 
