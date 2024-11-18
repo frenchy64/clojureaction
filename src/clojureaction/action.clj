@@ -2,9 +2,13 @@
 (ns clojureaction.action
   (:require [clj-yaml.core :as yaml]
             [clojure.pprint :as pp]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.java.shell :as sh]))
+
+(spit "current-sha" (:out (sh/sh "git" "rev-parse" "--verify" "HEAD")))
 
 (def this-repo "frenchy64/clojureaction")
+(def this-sha (slurp "current-sha"))
 (def setup-clojure "DeLaGuardo/setup-clojure@13.0")
 (def actions-checkout "actions/checkout@v4")
 (def bb-version "1.12.195")
@@ -58,19 +62,20 @@
   {:name "clojureaction"
    :description "GitHub Action to build Clojure projects"
    :author "Ambrose Bonnaire-Sergeant"
-   :branding {:color "blue"
-              :icon "type"}
+   :on {:workflow_call ""}
    :inputs inputs
-   :runs {:using "composite"
-          :steps [{:uses setup-clojure
-                   :with {:bb bb-version}}
-                  {:uses actions-checkout
-                   :with {:repository this-repo
-                          ;; hmm how to get current sha
-                          :ref "release"}}]}})
+   ;:outputs {}
+   :jobs [{:setup
+           {:runs-on "ubuntu-latest"
+            :steps [{:uses setup-clojure
+                     :with {:bb bb-version}}
+                    {:uses actions-checkout
+                     :with {:repository this-repo
+                            :ref this-sha}}]}}]})
 
 (defn gen []
-  (spit "action.yml" (yaml/generate-string template {:dumper-options {:flow-style :block}})))
+  (spit ".github/workflows/clojureaction.yml"
+        (yaml/generate-string template {:dumper-options {:flow-style :block}})))
 
 (defn -main [] (gen))
 
