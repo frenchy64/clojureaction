@@ -10,11 +10,11 @@ on:
       - release
 
 jobs:
-  call-workflow-1-in-local-repo:
+  clojureaction:
     uses: ./.github/workflows/unstable-clojureaction.yml
     with:
       edn: |-
-        {}
+        {:download-deps "script/deps"}
   test:
     runs-on: ubuntu-22.04
     steps:
