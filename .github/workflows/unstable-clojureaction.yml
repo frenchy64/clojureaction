@@ -58,15 +58,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: frenchy64/clojureaction
-        ref: b94f46e602d4ee09d56d8da18c1b3231a2adf415
-        path: clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415
+        ref: 3992b7c6817e32f09cb406772b0ca5172e1d55f7
+        path: clojureaction-3992b7c6817e32f09cb406772b0ca5172e1d55f7
     - name: Move clojureaction repository out of GITHUB_WORKSPACE
-      run: mv clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415 ../clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415
+      run: mv clojureaction-3992b7c6817e32f09cb406772b0ca5172e1d55f7 ../clojureaction-3992b7c6817e32f09cb406772b0ca5172e1d55f7
     - name: Checkout user repository
       uses: actions/checkout@v4
     - name: Parse clojureaction configuration
       id: config
-      run: ../clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
+      run: ../clojureaction-3992b7c6817e32f09cb406772b0ca5172e1d55f7/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Debug
       run: |-
         echo '${{steps.config.outputs.out}}'
@@ -88,9 +88,9 @@ jobs:
         key: ${{ fromJSON(steps.config.outputs.out).download-deps.key }}
         restore-keys: ${{ fromJSON(steps.config.outputs.out).download-deps.restore-keys }}
     - name: Download Clojure dependencies
-      working-directory: ../clojureaction-b94f46e602d4ee09d56d8da18c1b3231a2adf415
+      working-directory: ../clojureaction-3992b7c6817e32f09cb406772b0ca5172e1d55f7
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
-      run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
+      run: ../clojureaction-3992b7c6817e32f09cb406772b0ca5172e1d55f7/src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4

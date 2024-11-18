@@ -124,7 +124,7 @@
                       {:name "Download Clojure dependencies"
                        :working-directory this-repo-path
                        :if (str download-deps " && " cache-restore-miss)
-                       :run (format "./src/clojureaction/download_deps.clj '${{ %s }}'" conf-output)}
+                       :run (format "%s/src/clojureaction/download_deps.clj '${{ %s }}'" this-repo-path conf-output)}
                       {:name "Save Clojure cache"
                        :if (str download-deps " && " cache-restore-miss)
                        :uses "actions/cache/save@v4"
