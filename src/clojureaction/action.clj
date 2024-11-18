@@ -82,6 +82,7 @@
                  ->cache-miss (fn [step] (format "steps.%s.outputs.cache-hit != 'true'" step))
                  cache-check-miss (->cache-miss cache-check)
                  cache-restore "cache-restore"
+                 ;;hmm this doesn't seem to work?
                  cache-restore-miss (->cache-miss cache-restore)
                  cache-path (format "${{ %s.cache-path }}" download-deps)
                  cache-key (format "${{ %s.key }}" download-deps)
@@ -125,14 +126,14 @@
                               :restore-keys (format "${{ %s.restore-keys }}" download-deps)}}
                       {:name "Install Clojure tools"
                        :uses setup-clojure
-                       :if (str download-deps " && " cache-restore-miss)
+                       :if (str download-deps " && " cache-check-miss)
                        :with setup-clojure-with}
                       {:name "Download Clojure dependencies"
                        :working-directory this-repo-path
-                       :if (str download-deps " && " cache-restore-miss)
+                       :if (str download-deps " && " cache-check-miss)
                        :run (format "%s/src/clojureaction/download_deps.clj '%s'" this-repo-path deps-command)}
                       {:name "Save Clojure cache"
-                       :if (str download-deps " && " cache-restore-miss)
+                       :if (str download-deps " && " cache-check-miss)
                        :uses "actions/cache/save@v4"
                        :with {:path cache-path
                               :key cache-key}}]})

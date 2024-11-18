@@ -58,15 +58,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: frenchy64/clojureaction
-        ref: e439ea5c6436b63ad50b399464cef8b930e53072
-        path: clojureaction-e439ea5c6436b63ad50b399464cef8b930e53072
+        ref: 80f867738eb546ffbbcd70cb098f20b900861414
+        path: clojureaction-80f867738eb546ffbbcd70cb098f20b900861414
     - name: Move clojureaction repository out of GITHUB_WORKSPACE
-      run: mv clojureaction-e439ea5c6436b63ad50b399464cef8b930e53072 ../clojureaction-e439ea5c6436b63ad50b399464cef8b930e53072
+      run: mv clojureaction-80f867738eb546ffbbcd70cb098f20b900861414 ../clojureaction-80f867738eb546ffbbcd70cb098f20b900861414
     - name: Checkout user repository
       uses: actions/checkout@v4
     - name: Parse clojureaction configuration
       id: config
-      run: ../clojureaction-e439ea5c6436b63ad50b399464cef8b930e53072/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
+      run: ../clojureaction-80f867738eb546ffbbcd70cb098f20b900861414/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Debug
       run: |-
         echo '${{steps.config.outputs.out}}'
@@ -89,14 +89,14 @@ jobs:
         restore-keys: ${{ fromJSON(steps.config.outputs.out).download-deps.restore-keys }}
     - name: Install Clojure tools
       uses: DeLaGuardo/setup-clojure@13.0
-      if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
+      if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-check.outputs.cache-hit != 'true'
       with: ${{ fromJSON(steps.config.outputs.out).download-deps.setup-clojure }}
     - name: Download Clojure dependencies
-      working-directory: ../clojureaction-e439ea5c6436b63ad50b399464cef8b930e53072
-      if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
-      run: ../clojureaction-e439ea5c6436b63ad50b399464cef8b930e53072/src/clojureaction/download_deps.clj '${{ fromJSON(steps.config.outputs.out).download-deps.command }}'
+      working-directory: ../clojureaction-80f867738eb546ffbbcd70cb098f20b900861414
+      if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-check.outputs.cache-hit != 'true'
+      run: ../clojureaction-80f867738eb546ffbbcd70cb098f20b900861414/src/clojureaction/download_deps.clj '${{ fromJSON(steps.config.outputs.out).download-deps.command }}'
     - name: Save Clojure cache
-      if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
+      if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-check.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
       with:
         path: ${{ fromJSON(steps.config.outputs.out).download-deps.cache-path }}
