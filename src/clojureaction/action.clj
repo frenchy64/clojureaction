@@ -22,9 +22,9 @@
                                        "      edn: |-"
                                        (indent 8 (with-out-str
                                                    (pp/pprint
-                                                     {:test {:command "lein test"}
-                                                      :deps "lein deps"
-                                                      :lint "clj-kondo"
+                                                     {:commands ["lein test"
+                                                                 "clj-kondo"]
+                                                      :deps "lein with-profile +test,+clj-kondo deps"
                                                       :target-duration [5 :minutes]
                                                       :java 21})))
                                        ""
@@ -42,7 +42,9 @@
                                        "- :java"
                                        "- :target-duration  Target duration for entire build."
                                        "  Example: [5 :minutes]"
-                                       ])}}])
+                                       "- :ineffective-cache-detection  If true, fail the build if dependencies are still"
+                                       "                                downloaded on a cache-hit."
+                                       "  Default: true"])}}])
 
 (def template
   {:name "clojureaction"
