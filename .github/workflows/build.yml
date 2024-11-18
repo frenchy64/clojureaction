@@ -12,8 +12,9 @@ on:
 jobs:
   call-workflow-1-in-local-repo:
     uses: ./.github/workflows/unstable-clojureaction.yml
-    with: |-
-      {}
+    with:
+      edn: |-
+        {}
   test:
     runs-on: ubuntu-22.04
     steps:
