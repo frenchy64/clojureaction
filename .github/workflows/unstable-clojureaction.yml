@@ -58,11 +58,12 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: frenchy64/clojureaction
-        ref: 8956b997aa095278c327138cb607bbdf87faa1fe
-        path: clojureaction-8956b997aa095278c327138cb607bbdf87faa1fe
-    - run: mv clojureaction-8956b997aa095278c327138cb607bbdf87faa1fe ../clojureaction-8956b997aa095278c327138cb607bbdf87faa1fe
+        ref: b4512517c82c2aa9b4991eed41a48ed1d95ee6f1
+        path: clojureaction-b4512517c82c2aa9b4991eed41a48ed1d95ee6f1
+    - name: Move clojureaction repository out of GITHUB_WORKSPACE
+      run: mv clojureaction-b4512517c82c2aa9b4991eed41a48ed1d95ee6f1 ../clojureaction-b4512517c82c2aa9b4991eed41a48ed1d95ee6f1
     - name: Parse clojureaction configuration
-      working-directory: ../clojureaction-8956b997aa095278c327138cb607bbdf87faa1fe
+      working-directory: ../clojureaction-b4512517c82c2aa9b4991eed41a48ed1d95ee6f1
       id: config
       run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Inspect shared Clojure cache
@@ -85,7 +86,7 @@ jobs:
         key: ${{ fromJSON(steps.config.outputs.out).download-deps.key }}
         restore-keys: ${{ fromJSON(steps.config.outputs.out).download-deps.restore-keys }}
     - name: Download Clojure dependencies
-      working-directory: ../clojureaction-8956b997aa095278c327138cb607bbdf87faa1fe
+      working-directory: ../clojureaction-b4512517c82c2aa9b4991eed41a48ed1d95ee6f1
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache

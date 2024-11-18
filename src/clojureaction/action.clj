@@ -95,7 +95,8 @@
                        :with {:repository this-repo
                               :ref this-sha
                               :path this-repo-dir}}
-                      {:run (format "mv %s %s" this-repo-dir this-repo-path)}
+                      {:name "Move clojureaction repository out of GITHUB_WORKSPACE"
+                       :run (format "mv %s %s" this-repo-dir this-repo-path)}
                       {:name "Parse clojureaction configuration"
                        :working-directory this-repo-path
                        :id "config"
