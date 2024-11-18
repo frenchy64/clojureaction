@@ -76,7 +76,8 @@
    ;:outputs {}
    :jobs (array-map
            :setup
-           (let [download-deps (format "fromJSON(steps.config.outputs.%s).download-deps" econf/output-name)
+           (let [raw-config (str "steps.config.outputs." econf/output-name)
+                 download-deps (format "fromJSON(%s).download-deps" raw-config)
                  cache-check "cache-check"
                  ->cache-miss (fn [step] (format "steps.%s.outputs.cache-hit != 'true'" step))
                  cache-check-miss (->cache-miss cache-check)
@@ -101,6 +102,8 @@
                        :working-directory this-repo-path
                        :id "config"
                        :run (format "./src/clojureaction/eval_config.clj '${{ inputs.%s }}'" input-config)}
+                      {:name "Debug"
+                       :run (format "echo '${{%s}}'" raw-config)}
                       {:name "Inspect shared Clojure cache"
                        :id cache-check
                        :if download-deps
