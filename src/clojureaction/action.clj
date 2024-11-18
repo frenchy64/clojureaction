@@ -105,7 +105,8 @@
                        :id "config"
                        :run (format "%s/src/clojureaction/eval_config.clj '${{ inputs.%s }}'" this-repo-path input-config)}
                       {:name "Debug"
-                       :run (format "echo '${{%s}}'" raw-config)}
+                       :run (str/join "\n" [(format "echo '${{%s}}'" raw-config)
+                                            (format "echo '${{toJSON(%s)}}'" download-deps)])}
                       {:name "Inspect shared Clojure cache"
                        :id cache-check
                        :if download-deps
