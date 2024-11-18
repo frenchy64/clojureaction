@@ -58,15 +58,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: frenchy64/clojureaction
-        ref: a111515da93949e4eddae16fa8643a132a7047d1
-        path: clojureaction-a111515da93949e4eddae16fa8643a132a7047d1
+        ref: e97f842a7231a6dd6941849b6223d9711277b283
+        path: clojureaction-e97f842a7231a6dd6941849b6223d9711277b283
     - name: Move clojureaction repository out of GITHUB_WORKSPACE
-      run: mv clojureaction-a111515da93949e4eddae16fa8643a132a7047d1 ../clojureaction-a111515da93949e4eddae16fa8643a132a7047d1
+      run: mv clojureaction-e97f842a7231a6dd6941849b6223d9711277b283 ../clojureaction-e97f842a7231a6dd6941849b6223d9711277b283
     - name: Checkout user repository
       uses: actions/checkout@v4
     - name: Parse clojureaction configuration
       id: config
-      run: ../clojureaction-a111515da93949e4eddae16fa8643a132a7047d1/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
+      run: ../clojureaction-e97f842a7231a6dd6941849b6223d9711277b283/src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Debug
       run: |-
         echo '${{steps.config.outputs.out}}'
@@ -91,9 +91,9 @@ jobs:
       uses: DeLaGuardo/setup-clojure@13.0
       with: ${{ fromJSON(steps.config.outputs.out).download-deps.setup-clojure }}
     - name: Download Clojure dependencies
-      working-directory: ../clojureaction-a111515da93949e4eddae16fa8643a132a7047d1
+      working-directory: ../clojureaction-e97f842a7231a6dd6941849b6223d9711277b283
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
-      run: ../clojureaction-a111515da93949e4eddae16fa8643a132a7047d1/src/clojureaction/download_deps.clj '${{ ${{ fromJSON(steps.config.outputs.out).download-deps.command }} }}'
+      run: ../clojureaction-e97f842a7231a6dd6941849b6223d9711277b283/src/clojureaction/download_deps.clj '${{ fromJSON(steps.config.outputs.out).download-deps.command }}'
     - name: Save Clojure cache
       if: fromJSON(steps.config.outputs.out).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
