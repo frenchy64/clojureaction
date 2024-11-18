@@ -62,7 +62,7 @@
                                            "                                downloaded on a cache-hit."
                                            "  Default: true"])}})
 
-(def this-repo-dir (str "../clojureaction-" this-sha))
+(def this-repo-dir (str "tmp/clojureaction-" this-sha))
 
 (def install-bb {:name "Install Babashka"
                  :uses setup-clojure
