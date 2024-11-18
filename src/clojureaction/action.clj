@@ -62,7 +62,8 @@
                                            "                                downloaded on a cache-hit."
                                            "  Default: true"])}})
 
-(def this-repo-dir (str "tmp/clojureaction-" this-sha))
+(def this-repo-dir (str "clojureaction-" this-sha))
+(def this-repo-path (str "../clojureaction-" this-sha))
 
 (def install-bb {:name "Install Babashka"
                  :uses setup-clojure
@@ -88,11 +89,13 @@
               :outputs {:conf (format "${{ %s }}" conf-output)}
               :runs-on "ubuntu-latest"
               :steps [install-bb
+                      {:run "mkdir -p tmp"}
                       {:name "Checkout clojureaction repository"
                        :uses actions-checkout
                        :with {:repository this-repo
                               :ref this-sha
                               :path this-repo-dir}}
+                      {:run (format "mv '%s' '%s'" this-repo-dir this-repo-path)}
                       {:name "Parse clojureaction configuration"
                        :working-directory this-repo-dir
                        :id "config"
@@ -115,7 +118,7 @@
                               :key cache-key
                               :restore-keys (format "${{ %s.restore-keys }}" download-deps)}}
                       {:name "Download Clojure dependencies"
-                       :working-directory this-repo-dir
+                       :working-directory this-repo-path
                        :if (str download-deps " && " cache-restore-miss)
                        :run (format "./src/clojureaction/download_deps.clj '${{ %s }}'" conf-output)}
                       {:name "Save Clojure cache"

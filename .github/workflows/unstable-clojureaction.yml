@@ -53,17 +53,22 @@ jobs:
       uses: DeLaGuardo/setup-clojure@13.0
       with:
         bb: 1.12.195
+    - run: mkdir -p tmp
     - name: Checkout clojureaction repository
       uses: actions/checkout@v4
       with:
         repository: frenchy64/clojureaction
         ref: |
-          190c15b8f1ab96de51000874f027833739c12251
+          89d3d3026479b62bf04f349265dbff8d014c9f9d
         path: |
-          tmp/clojureaction-190c15b8f1ab96de51000874f027833739c12251
+          clojureaction-89d3d3026479b62bf04f349265dbff8d014c9f9d
+    - run: |-
+        mv 'clojureaction-89d3d3026479b62bf04f349265dbff8d014c9f9d
+        ' '../clojureaction-89d3d3026479b62bf04f349265dbff8d014c9f9d
+        '
     - name: Parse clojureaction configuration
       working-directory: |
-        tmp/clojureaction-190c15b8f1ab96de51000874f027833739c12251
+        clojureaction-89d3d3026479b62bf04f349265dbff8d014c9f9d
       id: config
       run: ./src/clojureaction/eval_config.clj '${{ inputs.edn }}'
     - name: Inspect shared Clojure cache
@@ -87,7 +92,7 @@ jobs:
         restore-keys: ${{ fromJSON(steps.config.outputs.edn).download-deps.restore-keys }}
     - name: Download Clojure dependencies
       working-directory: |
-        tmp/clojureaction-190c15b8f1ab96de51000874f027833739c12251
+        ../clojureaction-89d3d3026479b62bf04f349265dbff8d014c9f9d
       if: fromJSON(steps.config.outputs.edn).download-deps && steps.cache-restore.outputs.cache-hit != 'true'
       run: ./src/clojureaction/download_deps.clj '${{ steps.config.outputs.edn }}'
     - name: Save Clojure cache
